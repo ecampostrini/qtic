@@ -1,7 +1,7 @@
 #include "button.h"
 
-button::button(int _id,const QString &, QWidget *parent)
-    : id(_id), QToolButton(parent)
+button::button(int _row, int _col,const QString &, QWidget *parent)
+    : col(_col), row(_row), QToolButton(parent)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 }
@@ -15,7 +15,12 @@ QSize button::sizeHint() const
     return size;
 }
 
-int button::getId()
+int button::getRow()
 {
-    return id;
+    return row;
+}
+
+int button::getCol()
+{
+    return col;
 }

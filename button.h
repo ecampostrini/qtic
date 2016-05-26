@@ -9,13 +9,14 @@ class button : public QToolButton
     Q_OBJECT
 
 public:
-    explicit button(int id, const QString&, QWidget *parent = 0);
+    explicit button(int row, int col, const QString&, QWidget *parent = 0);
 
     QSize sizeHint() const Q_DECL_OVERRIDE;
-    int getId();
+    int getRow();
+    int getCol();
 
 private:
-    int id;
+    int row, col;
 };
 
 #endif // BUTTON_H

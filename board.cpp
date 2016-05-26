@@ -19,18 +19,19 @@ board::board(QWidget *parent) :
 
     for(int i = 0; i < NumRows * NumCols; i++)
     {
-        int row = i / NumRows + 1;
-        int col = i % NumRows + 1;
+        int row = i / NumRows;
+        int col = i % NumRows;
 
-        buttons[i] = createButton(i + 1, "", SLOT(buttonClicked()));
-        mainLayout->addWidget(buttons[i], row, col);
+        buttons[i] = createButton(row, col, "", SLOT(buttonClicked()));
+        mainLayout->addWidget(buttons[i], row + 1, col + 1);
+
+        game_board[row][col] = '\0';
     }
-
 }
 
-button* board::createButton(int id, const QString &text, const char *member)
+button* board::createButton(int row, int col, const QString &text, const char *member)
 {
-    button *new_button = new button(id, text);
+    button *new_button = new button(row, col, text);
     connect(new_button, SIGNAL(clicked()), this, member);
 
     return new_button;
@@ -49,17 +50,21 @@ void board::buttonClicked()
 
     if(clickedButton)
     {
-        int button_id = clickedButton->getId();
-        debug_display->setText(QString::number(button_id));
+        int row = clickedButton->getRow();
+        int col = clickedButton->getCol();
+
+        debug_display->setText(QString::number(row) + ", " + QString::number(col));
 
         if(next_player == Player::HUMAN)
         {
             clickedButton->setText("X");
+            game_board[row][col] = 'X';
             next_player = Player::MACHINE;
         }
         else if(next_player == Player::MACHINE)
         {
             clickedButton->setText("O");
+            game_board[row][col] = 'O';
             next_player = Player::HUMAN;
         }
 

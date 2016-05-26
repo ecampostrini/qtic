@@ -17,7 +17,7 @@ class board : public QWidget
 private:
     Ui::board *ui;
     enum {NumRows = 3, NumCols = 3};
-    enum class Player {HUMAN, MACHINE};
+    enum class Player : char {HUMAN, MACHINE};
 
 public:
     explicit board(QWidget *parent = 0);
@@ -26,7 +26,8 @@ public:
 private:
     Player next_player;
     button *buttons[NumRows * NumCols];
-    button *createButton(int id, const QString&, const char *member);
+    button *createButton(int row, int col, const QString&, const char *member);
+    char game_board[NumRows][NumRows];
     /*For debuggin*/
     QLineEdit *debug_display;
 
