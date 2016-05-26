@@ -2,6 +2,9 @@
 #define BOARD_H
 
 #include <QWidget>
+//#include <QPushButton>
+#include <QLineEdit>
+#include "button.h"
 
 namespace Ui {
 class board;
@@ -11,12 +14,24 @@ class board : public QWidget
 {
     Q_OBJECT
 
+private:
+    Ui::board *ui;
+    enum {NumRows = 3, NumCols = 3};
+    enum class Player {HUMAN, MACHINE};
+
 public:
     explicit board(QWidget *parent = 0);
     ~board();
 
 private:
-    Ui::board *ui;
+    Player next_player;
+    button *buttons[NumRows * NumCols];
+    button *createButton(int id, const QString&, const char *member);
+    /*For debuggin*/
+    QLineEdit *debug_display;
+
+private slots:
+    void buttonClicked();
 };
 
 #endif // BOARD_H
