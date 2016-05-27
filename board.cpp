@@ -6,8 +6,7 @@
 
 board::board(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::board),
-    next_player(Player::HUMAN)
+    ui(new Ui::board)
 {
     ui->setupUi(this);
 
@@ -19,10 +18,6 @@ board::board(QWidget *parent) :
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
     mainLayout->addWidget(debug_display, 0, 0, 1, 6);
 
-    game_board = new char*[NumRows];
-    for(int i = 0; i < NumCols; i++)
-        game_board[i] = new char[NumCols];
-
     for(int i = 0; i < NumRows * NumCols; i++)
     {
         int row = i / NumRows;
@@ -30,12 +25,11 @@ board::board(QWidget *parent) :
 
         buttons[i] = createButton(row, col, "", SLOT(buttonClicked()));
         mainLayout->addWidget(buttons[i], row + 1, col + 1);
-
-        game_board[row][col] = '\0';
     }
 
     setLayout(mainLayout);
 
+    game_board = new GameBoard(NumRows, NumCols);
     ai = new Ai(NumRows, NumCols);
 }
 
@@ -51,30 +45,8 @@ board::~board()
 {
     delete ui;
     delete ai;
+    delete game_board;
 
-    for(int i = 0; i < NumRows; i++)
-        delete[] game_board[i];
-    delete[] game_board;
-}
-
-bool board::check_board()
-{
-    //Checks the rows
-    for(int i = 0; i < NumRows; i++)
-        if(game_board[i][0] != '\0' && game_board[i][0] == game_board[i][1] && game_board[i][1] == game_board[i][2])
-            return true;
-
-    //Checks the columns
-    for(int i = 0; i < NumCols; i++)
-        if(game_board[0][i] != '\0' && game_board[0][i] == game_board[1][i] && game_board[1][i] == game_board[2][i])
-            return true;
-
-    //Checks the diagonals
-    if((game_board[0][0] != '\0' && game_board[0][0] == game_board[1][1] && game_board[1][1] == game_board[2][2]) ||
-        (game_board[0][2] != '\0' && game_board[0][2] == game_board[1][1] && game_board[1][1] == game_board[2][0]))
-        return true;
-
-    return false;
 }
 
 void board::disableButtons()
@@ -91,15 +63,15 @@ void board::buttonClicked()
 
     if(clickedButton)
     {
-        int row = clickedButton->getRow();
-        int col = clickedButton->getCol();
+        int b_row = clickedButton->getRow();
+        int b_col = clickedButton->getCol();
 
-        debug_display->setText(QString::number(row) + ", " + QString::number(col));
+        debug_display->setText(QString::number(b_row) + ", " + QString::number(b_col));
 
         //obviously the button was clicked by the human
         clickedButton->setText("X");
-        game_board[row][col] = 'X';
-        if(check_board())
+        game_board->setSquare(b_row, b_col, 'X');
+        if(game_board->hasWinner())
         {
             debug_display->setText("Human wins");
             disableButtons();
@@ -110,18 +82,17 @@ void board::buttonClicked()
         //then we make the machine play
         std::pair<int, int> machine_move;
 
-        if(ai->getNextMove(game_board, machine_move))
+        if(ai->getNextMove(*game_board, machine_move))
         {
-            row = machine_move.first;
-            col = machine_move.second;
-
-            int delinearized_button_position = row * NumRows + col;
+            int m_row = machine_move.first;
+            int m_col = machine_move.second;
+            int delinearized_button_position = m_row * NumRows + m_col;
 
             buttons[delinearized_button_position]->setText("O");
             buttons[delinearized_button_position]->setEnabled(false);
-            game_board[row][col] = 'O';
+            game_board->setSquare(m_row, m_col, 'O');
 
-            if(check_board())
+            if(game_board->hasWinner())
             {
                 debug_display->setText("Machine wins");
                 disableButtons();

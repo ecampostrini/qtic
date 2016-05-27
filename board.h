@@ -18,18 +18,15 @@ class board : public QWidget
 private:
     Ui::board *ui;
     enum {NumRows = 3, NumCols = 3};
-    enum class Player : char {HUMAN = 'X', MACHINE = 'O'};
+    button *buttons[NumRows * NumCols];
+    GameBoard *game_board;
+    Ai *ai;
 
 public:
     explicit board(QWidget *parent = 0);
     ~board();
 
 private:
-    Player next_player;
-    button *buttons[NumRows * NumCols];
-    //char game_board[NumRows][NumRows];
-    char **game_board;
-    Ai *ai;
 
     button *createButton(int row, int col, const QString&, const char *member);
     void disableButtons();
