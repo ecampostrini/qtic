@@ -28,7 +28,9 @@ public:
     int getRowNumber(){ return rowNum;};
     int getColNumber(){ return colNum;};
     void setSquare(int row, int col, const char val) {game_board[row][col] = val;};
-    char getValue(int i, int j){return game_board[i][j];}
+    char getValue(int i, int j){return game_board[i][j];};
+    bool isEmpty(int i, int j){return game_board[i][j] == '\0';};
+    void clearSquare(int i, int j){game_board[i][j] = '\0';}
     bool hasWinner();
 
 private:
@@ -44,8 +46,12 @@ public:
     ~Ai();
 
     bool getNextMove(GameBoard &gb, std::pair<int, int> &result);
+    std::pair<int,int> minimax(GameBoard &board);
 private:
     int rowNum, colNum;
+
+    int maximize(GameBoard&);
+    int minimize(GameBoard&);
 };
 
 #endif // AI_H

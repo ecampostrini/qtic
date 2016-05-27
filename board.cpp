@@ -82,8 +82,9 @@ void board::buttonClicked()
         //then we make the machine play
         std::pair<int, int> machine_move;
 
-        if(ai->getNextMove(*game_board, machine_move))
-        {
+        //if(ai->getNextMove(*game_board, machine_move))
+        //{
+            machine_move = ai->minimax(*game_board);
             int m_row = machine_move.first;
             int m_col = machine_move.second;
             int delinearized_button_position = m_row * NumRows + m_col;
@@ -98,6 +99,6 @@ void board::buttonClicked()
                 disableButtons();
                 return;
             }
-        }
+        //}
     }
 }
