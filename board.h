@@ -5,6 +5,7 @@
 //#include <QPushButton>
 #include <QLineEdit>
 #include "button.h"
+#include "ai.h"
 
 namespace Ui {
 class board;
@@ -17,7 +18,7 @@ class board : public QWidget
 private:
     Ui::board *ui;
     enum {NumRows = 3, NumCols = 3};
-    enum class Player : char {HUMAN, MACHINE};
+    enum class Player : char {HUMAN = 'X', MACHINE = 'O'};
 
 public:
     explicit board(QWidget *parent = 0);
@@ -26,8 +27,14 @@ public:
 private:
     Player next_player;
     button *buttons[NumRows * NumCols];
+    //char game_board[NumRows][NumRows];
+    char **game_board;
+    Ai *ai;
+
     button *createButton(int row, int col, const QString&, const char *member);
-    char game_board[NumRows][NumRows];
+    void disableButtons();
+    bool check_board();
+
     /*For debuggin*/
     QLineEdit *debug_display;
 

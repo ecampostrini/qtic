@@ -1,9 +1,11 @@
 #include "button.h"
 
 button::button(int _row, int _col,const QString &, QWidget *parent)
-    : col(_col), row(_row), QToolButton(parent)
+    : QToolButton(parent)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    col = _col;
+    row = _row;
 }
 
 QSize button::sizeHint() const
