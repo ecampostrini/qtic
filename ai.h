@@ -46,12 +46,12 @@ public:
     ~Ai();
 
     bool getNextMove(GameBoard &gb, std::pair<int, int> &result);
-    std::pair<int,int> minimax(GameBoard &board);
+    std::pair<int,int> minimax(GameBoard *board);
 private:
     int rowNum, colNum;
 
-    int maximize(GameBoard&);
-    int minimize(GameBoard&);
+    int maximize(GameBoard*);
+    int minimize(GameBoard*);
 };
 
 #endif // AI_H
