@@ -1,3 +1,6 @@
+#include <QtDebug>
+#include <cassert>
+
 #include "ai.h"
 
 
@@ -22,96 +25,106 @@ bool GameBoard::hasWinner()
     return false;
 }
 
+void GameBoard::setSquare(int row, int col, const char val)
+{
+    assert(isEmpty(row, col) && "Trying to set a used squared");
+    game_board[row][col] = val;
+    freeBoxes--;
+};
+
+void GameBoard::clearSquare(int row, int col)
+{
+    assert(!isEmpty(row, col) && "Trying to clear a free square");
+    game_board[row][col] = '\0';
+    freeBoxes++;
+}
+
+
 
 /***** AI methods *********/
 Ai::~Ai(){}
 
-bool Ai::getNextMove(GameBoard &board, std::pair<int, int> &result)
+std::pair<int, int> Ai::nextMove(GameBoard* board)
 {
-    for(int i = 0; i < board.getRowNumber(); i++)
-        for(int j = 0; j < board.getColNumber(); j++)
-        {
-            if(board.getValue(i, j) == '\0')
-            {
-                result.first = i;
-                result.second = j;
-                return true;
-            }
-        }
-
-    return false;
-}
-
-std::pair<int, int> Ai::minimax(GameBoard &board)
-{
-    int result = -1;
+    int result = -2;
     std::pair<int, int> best_move;
 
-    for(int i; i < board.getRowNumber(); i++)
-        for(int j; j < board.getColNumber(); j++)
+    for(int i = 0; i < board->getRowNumber(); i++)
+        for(int j = 0; j < board->getColNumber(); j++)
         {
             int local_result;
 
-            if(!board.isEmpty(i, j))
+            if(!board->isEmpty(i, j))
                 continue;
 
-            board.setSquare(i, j, 'O');
-            if((local_result = minimize(board)) >= result)
+            board->setSquare(i, j, 'O');
+            local_result = minimize(board);
+            board->clearSquare(i, j);
+
+            if(local_result > result)
             {
                 result = local_result;
                 best_move.first = i;
                 best_move.second = j;
             }
+
         }
 
     return best_move;
 }
 
-int Ai::maximize(GameBoard &board)
+int Ai::minimize(GameBoard* board)
 {
-    int result = 0;
+    int result = 2;
 
-    if(board.hasWinner())
-        return -1;
+    if(board->hasWinner())
+        return 1;
+    else if(!board->hasPlace())
+        return 0;
 
-    for(int i = 0; i < board.getRowNumber(); i++)
-    {
-        for(int j = 0; j < board.getColNumber(); j++)
+    for(int i = 0; i < board->getRowNumber(); i++)
+        for(int j = 0; j < board->getColNumber(); j++)
         {
             int local_result;
 
-            if(!board.isEmpty(i, j))
+            if(!board->isEmpty(i, j))
                 continue;
 
-            board.setSquare(i, j, 'O');
-            if((local_result = minimize(board)) > result)
+            board->setSquare(i, j, 'X');
+            local_result = maximize(board);
+            board->clearSquare(i, j);
+
+            if(local_result < result)
             {
                 result = local_result;
             }
-            board.clearSquare(i, j);
         }
-    }
 
     return result;
 }
 
-int Ai::minimize(GameBoard &board )
+int Ai::maximize(GameBoard* board)
 {
-    int result = 0;
+    int result = -2;
 
-    if(board.hasWinner())
-        return 1;
+    if(board->hasWinner())
+        return -1;
+    else if(!board->hasPlace())
+        return 0;
 
-    for(int i = 0; i < board.getRowNumber(); i++)
-        for(int j = 0; j < board.getColNumber(); j++)
+    for(int i = 0; i < board->getRowNumber(); i++)
+        for(int j = 0; j < board->getColNumber(); j++)
         {
             int local_result;
 
-            if(!board.isEmpty(i, j))
+            if(!board->isEmpty(i, j))
                 continue;
 
-            board.setSquare(i, j, 'X');
-            if((local_result = maximize(board)) < result)
+            board->setSquare(i, j, 'O');
+            local_result = minimize(board);
+            board->clearSquare(i, j);
+
+            if(local_result > result)
             {
                 result = local_result;
             }

@@ -1,5 +1,6 @@
 #include <QGridLayout>
 #include <utility>
+#include <QtDebug>
 
 #include "board.h"
 #include "ui_board.h"
@@ -77,28 +78,36 @@ void board::buttonClicked()
             disableButtons();
             return;
         }
+        else if (!game_board->hasPlace())
+        {
+            debug_display->setText("Draw");
+            return;
+        }
+
         clickedButton->setEnabled(false);
 
         //then we make the machine play
         std::pair<int, int> machine_move;
 
-        //if(ai->getNextMove(*game_board, machine_move))
-        //{
-            machine_move = ai->minimax(*game_board);
-            int m_row = machine_move.first;
-            int m_col = machine_move.second;
-            int delinearized_button_position = m_row * NumRows + m_col;
+        machine_move = ai->nextMove(game_board);
+        int m_row = machine_move.first;
+        int m_col = machine_move.second;
+        int delinearized_button_position = m_row * NumRows + m_col;
 
-            buttons[delinearized_button_position]->setText("O");
-            buttons[delinearized_button_position]->setEnabled(false);
-            game_board->setSquare(m_row, m_col, 'O');
+        buttons[delinearized_button_position]->setText("O");
+        buttons[delinearized_button_position]->setEnabled(false);
+        game_board->setSquare(m_row, m_col, 'O');
 
-            if(game_board->hasWinner())
-            {
-                debug_display->setText("Machine wins");
-                disableButtons();
-                return;
-            }
-        //}
+        if(game_board->hasWinner())
+        {
+            debug_display->setText("Machine wins");
+            disableButtons();
+            return;
+        }
+        else if (!game_board->hasPlace())
+        {
+            debug_display->setText("Draw");
+            return;
+        }
     }
 }
