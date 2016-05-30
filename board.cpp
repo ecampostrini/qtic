@@ -11,7 +11,7 @@ board::board(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    debug_display = new QLineEdit("0");
+    debug_display = new QLineEdit("Game on!");
     debug_display->setReadOnly(true);
     debug_display->setAlignment(Qt::AlignRight);
 
@@ -52,8 +52,26 @@ board::~board()
 
 void board::disableButtons()
 {
-    for(int i = 0; i < NumRows * NumCols; i++)
-        buttons[i]->setEnabled(false);
+    for(auto b : buttons)
+        b->setEnabled(false);
+}
+
+bool board::check_board(const char *message)
+{
+    bool result = false;
+
+    if(game_board->hasWinner())
+    {
+        debug_display->setText(message);
+        result = true;
+    }
+    else if(!game_board->hasPlace())
+    {
+        debug_display->setText("Draw");
+        result = true;
+    }
+
+    return result;
 }
 
 /******** SLOTS *********/
@@ -67,24 +85,13 @@ void board::buttonClicked()
         int b_row = clickedButton->getRow();
         int b_col = clickedButton->getCol();
 
-        debug_display->setText(QString::number(b_row) + ", " + QString::number(b_col));
-
         //obviously the button was clicked by the human
         clickedButton->setText("X");
-        game_board->setSquare(b_row, b_col, 'X');
-        if(game_board->hasWinner())
-        {
-            debug_display->setText("Human wins");
-            disableButtons();
-            return;
-        }
-        else if (!game_board->hasPlace())
-        {
-            debug_display->setText("Draw");
-            return;
-        }
-
         clickedButton->setEnabled(false);
+        game_board->setSquare(b_row, b_col, GameBoard::Player::Human);
+
+        if(check_board("Human wins"))
+            return;
 
         //then we make the machine play
         std::pair<int, int> machine_move;
@@ -96,18 +103,9 @@ void board::buttonClicked()
 
         buttons[delinearized_button_position]->setText("O");
         buttons[delinearized_button_position]->setEnabled(false);
-        game_board->setSquare(m_row, m_col, 'O');
+        game_board->setSquare(m_row, m_col, GameBoard::Player::Machine);
 
-        if(game_board->hasWinner())
-        {
-            debug_display->setText("Machine wins");
-            disableButtons();
+        if(check_board("Machine wins"))
             return;
-        }
-        else if (!game_board->hasPlace())
-        {
-            debug_display->setText("Draw");
-            return;
-        }
     }
 }

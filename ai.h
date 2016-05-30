@@ -7,19 +7,24 @@
 class GameBoard
 {
 public:
+    enum class Player : char {Human = -1, Machine = 1, None = 0};
+
     GameBoard(int rn, int cn) :
         rowNum(rn),
         colNum(cn),
         freeBoxes(rowNum * colNum)
     {
-        game_board = new char*[rowNum];
+        game_board = new Player*[rowNum];
         for(int i = 0; i < rowNum; i++)
         {
-            game_board[i] = new char[colNum];
+            game_board[i] = new Player[colNum];
 
             for(int j = 0; j < colNum; j++)
-                game_board[i][j] = '\0';
+                game_board[i][j] = Player::None;
         }
+
+        last_to_play = Player::None;
+        next_to_play = Player::None;
     }
 
     ~GameBoard()
@@ -31,17 +36,22 @@ public:
 
     int getRowNumber(){ return rowNum;}
     int getColNumber(){ return colNum;}
-    void setSquare(int row, int col, const char val);
-    char getValue(int i, int j){return game_board[i][j];}
-    bool isEmpty(int i, int j){return game_board[i][j] == '\0';}
-    bool hasPlace(){return freeBoxes > 0;}
+    void setSquare(int row, int col, const Player &val);
     void clearSquare(int i, int j);
+    Player getValue(int i, int j){return game_board[i][j];}
+    bool isEmpty(int i, int j){return game_board[i][j] == Player::None;}
+    bool hasPlace(){return freeBoxes > 0;}
     bool hasWinner();
+    Player lastToPlay(){ return last_to_play;}
+    Player nextToPlay(){ return next_to_play;}
+    int score(int &score);
 
 private:
-    char **game_board;
+    Player **game_board;
     int rowNum, colNum;
     int freeBoxes;
+    Player last_to_play;
+    Player next_to_play;
 
 };
 
@@ -57,6 +67,7 @@ private:
 
     int maximize(GameBoard*);
     int minimize(GameBoard*);
+    int minimax(GameBoard*, const GameBoard::Player &);
 };
 
 #endif // AI_H

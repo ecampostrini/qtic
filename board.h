@@ -29,8 +29,9 @@ public:
 private:
 
     button *createButton(int row, int col, const QString&, const char *member);
+    bool check_board(const char*);
     void disableButtons();
-    bool check_board();
+    //bool check_board();
 
     /*For debuggin*/
     QLineEdit *debug_display;
