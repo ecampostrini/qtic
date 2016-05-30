@@ -40,8 +40,6 @@ public:
     void clearSquare(int i, int j);
     Player getValue(int i, int j){return game_board[i][j];}
     bool isEmpty(int i, int j){return game_board[i][j] == Player::None;}
-    bool hasPlace(){return freeBoxes > 0;}
-    bool hasWinner();
     Player lastToPlay(){ return last_to_play;}
     Player nextToPlay(){ return next_to_play;}
     int score(int &score);
@@ -53,6 +51,8 @@ private:
     Player last_to_play;
     Player next_to_play;
 
+    bool hasPlace(){return freeBoxes > 0;}
+    bool hasWinner();
 };
 
 class Ai
@@ -65,8 +65,6 @@ public:
 private:
     int rowNum, colNum;
 
-    int maximize(GameBoard*);
-    int minimize(GameBoard*);
     int minimax(GameBoard*, const GameBoard::Player &);
 };
 

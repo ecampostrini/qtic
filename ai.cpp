@@ -43,7 +43,7 @@ void GameBoard::clearSquare(int row, int col)
     freeBoxes++;
 }
 
-/*If the game it's over it writes the scores on the argument and returns true,
+/*If the game is over it writes the scores on the argument and returns true,
 otherwise it returns false*/
 int GameBoard::score(int &score)
 {
@@ -80,7 +80,6 @@ std::pair<int, int> Ai::nextMove(GameBoard* board)
                 continue;
 
             board->setSquare(i, j, GameBoard::Player::Machine);
-            //local_result = minimize(board);
             local_result = minimax(board, GameBoard::Player::Human);
             board->clearSquare(i, j);
 
@@ -96,6 +95,9 @@ std::pair<int, int> Ai::nextMove(GameBoard* board)
     return best_move;
 }
 
+/* The minimax algorithm: when is the turn of the human it minimizes the
+ * result and when is the turn of the machine it maximizes it.
+*/
 int Ai::minimax(GameBoard* board, const GameBoard::Player &currentPlayer)
 {
     int result = (currentPlayer == GameBoard::Player::Human) ? 2 : -2;
@@ -129,66 +131,6 @@ int Ai::minimax(GameBoard* board, const GameBoard::Player &currentPlayer)
             }
         }
     }
-
-    return result;
-}
-
-int Ai::minimize(GameBoard* board)
-{
-    int result = 2;
-
-    if(board->hasWinner())
-        return 1;
-    else if(!board->hasPlace())
-        return 0;
-
-    for(int i = 0; i < board->getRowNumber(); i++)
-        for(int j = 0; j < board->getColNumber(); j++)
-        {
-            int local_result;
-
-            if(!board->isEmpty(i, j))
-                continue;
-
-            board->setSquare(i, j, GameBoard::Player::Human);
-            local_result = maximize(board);
-            board->clearSquare(i, j);
-
-            if(local_result < result)
-            {
-                result = local_result;
-            }
-        }
-
-    return result;
-}
-
-int Ai::maximize(GameBoard* board)
-{
-    int result = -2;
-
-    if(board->hasWinner())
-        return -1;
-    else if(!board->hasPlace())
-        return 0;
-
-    for(int i = 0; i < board->getRowNumber(); i++)
-        for(int j = 0; j < board->getColNumber(); j++)
-        {
-            int local_result;
-
-            if(!board->isEmpty(i, j))
-                continue;
-
-            board->setSquare(i, j, GameBoard::Player::Machine);
-            local_result = minimize(board);
-            board->clearSquare(i, j);
-
-            if(local_result > result)
-            {
-                result = local_result;
-            }
-        }
 
     return result;
 }
