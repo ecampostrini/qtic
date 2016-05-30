@@ -17,10 +17,10 @@ public:
         {
             game_board[i] = new char[colNum];
 
-        }
-        for(int i = 0; i < rowNum; i++)
             for(int j = 0; j < colNum; j++)
                 game_board[i][j] = '\0';
+
+        }
     }
 
     ~GameBoard()
