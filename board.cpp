@@ -62,16 +62,8 @@ bool board::check_board(const char *message)
 
     if(game_board->score(score))
     {
-        if(score == 0)
-        {
-            debug_display->setText("Draw");
-            return true;
-        }
-        else
-        {
-            debug_display->setText(message);
-            return true;
-        }
+        (score == 0) ? debug_display->setText("Draw") : debug_display->setText(message);
+        return true;
     }
     return false;
 }
