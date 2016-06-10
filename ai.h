@@ -1,13 +1,18 @@
 #ifndef AI_H
 #define AI_H
 
-#include <utility>
 #include <QDebug>
+#include <QMetaType>
+
+#include <utility>
 
 class GameBoard
 {
 public:
     enum class Player : char {Human = -1, Machine = 1, None = 0};
+
+    /*I add a default constructor so I can add the class to the metatype system*/
+    GameBoard(){}
 
     GameBoard(int rn, int cn) :
         rowNum(rn),
@@ -27,6 +32,8 @@ public:
         next_to_play = Player::None;
     }
 
+    GameBoard(const GameBoard& other);
+
     ~GameBoard()
     {
         for(int i = 0; i < rowNum; i++)
@@ -34,14 +41,14 @@ public:
         delete[] game_board;
     }
 
-    int getRowNumber(){ return rowNum;}
-    int getColNumber(){ return colNum;}
+    int getRowNumber() const { return rowNum;}
+    int getColNumber() const { return colNum;}
     void setSquare(int row, int col, const Player &val);
     void clearSquare(int i, int j);
-    Player getValue(int i, int j){return game_board[i][j];}
-    bool isEmpty(int i, int j){return game_board[i][j] == Player::None;}
-    Player lastToPlay(){ return last_to_play;}
-    Player nextToPlay(){ return next_to_play;}
+    Player getValue(int i, int j) const {return game_board[i][j];}
+    bool isEmpty(int i, int j) const {return game_board[i][j] == Player::None;}
+    Player lastToPlay() const { return last_to_play;}
+    Player nextToPlay() const { return next_to_play;}
     int score(int &score);
 
 private:
@@ -54,6 +61,10 @@ private:
     bool hasPlace(){return freeBoxes > 0;}
     bool hasWinner();
 };
+
+/*since we are passing the board to the thread we add it to the type system of QT*/
+Q_DECLARE_METATYPE(GameBoard);
+
 
 class Ai
 {

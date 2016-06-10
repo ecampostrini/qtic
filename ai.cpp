@@ -5,6 +5,26 @@
 
 
 /**** Board methods *******/
+GameBoard::GameBoard(const GameBoard &other):
+    rowNum(other.getRowNumber()),
+    colNum(other.getColNumber()),
+    freeBoxes(other.freeBoxes),
+    last_to_play(other.lastToPlay()),
+    next_to_play(other.nextToPlay())
+{
+    game_board = new Player*[rowNum];
+
+    for(int i = 0; i < rowNum; i++)
+    {
+        game_board[i] = new Player[colNum];
+        for(int j = 0; j < colNum; j++)
+        {
+            game_board[i][j] = other.getValue(i, j);
+        }
+    }
+}
+
+
 bool GameBoard::hasWinner()
 {
     //Checks the rows
