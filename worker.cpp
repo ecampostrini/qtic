@@ -1,5 +1,5 @@
 #include "worker.h"
-#include "ai.h"
+#include "gameboard.h"
 
 
 int Worker::minimax(GameBoard &board, const GameBoard::Player &currentPlayer)

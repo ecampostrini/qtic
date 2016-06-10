@@ -2,7 +2,7 @@
 #include <QMetaType>
 
 #include "board.h"
-#include "ai.h"
+#include "gameboard.h"
 
 int main(int argc, char *argv[])
 {

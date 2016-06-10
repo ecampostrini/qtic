@@ -17,6 +17,7 @@ board::board(QWidget *parent) :
     debug_display->setReadOnly(true);
     debug_display->setAlignment(Qt::AlignRight);
 
+    /*set the interface*/
     QGridLayout *mainLayout = new QGridLayout(this);
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
     mainLayout->addWidget(debug_display, 0, 0, 1, 6);
@@ -32,9 +33,8 @@ board::board(QWidget *parent) :
 
     setLayout(mainLayout);
 
+    /*and create the background processing classes*/
     game_board = new GameBoard(NumRows, NumCols);
-    ai = new Ai(NumRows, NumCols);
-
     worker = new Worker;
     workerThread = new QThread;
 
@@ -54,7 +54,6 @@ button* board::createButton(int row, int col, const QString &text, const char *m
 
 void board::connectSignalsSlots()
 {
-
     connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
     connect(this, SIGNAL(playBitch(GameBoard)), worker, SLOT(makeMove(GameBoard)));
     connect(worker, SIGNAL(newMove(std::pair<int,int>)), this, SLOT(machinePlayed(std::pair<int, int>)));
@@ -63,17 +62,14 @@ void board::connectSignalsSlots()
 board::~board()
 {
     delete ui;
-    delete ai;
     delete game_board;
-    delete worker;
 
+    worker->deleteLater();
     if(workerThread != 0 && workerThread->isRunning())
     {
         workerThread->requestInterruption();
         workerThread->quit();
     }
-    //delete workerThread;
-
 }
 
 void board::disableButtons()
@@ -116,26 +112,8 @@ void board::buttonClicked()
             return;
         }
 
-        emit playBitch(*game_board);
-
         //then we make the machine play
-        /*
-        std::pair<int, int> machine_move;
-
-        machine_move = ai->nextMove(game_board);
-        int m_row = machine_move.first;
-        int m_col = machine_move.second;
-        int delinearized_button_position = m_row * NumRows + m_col;
-
-        buttons[delinearized_button_position]->setText("O");
-        buttons[delinearized_button_position]->setEnabled(false);
-        game_board->setSquare(m_row, m_col, GameBoard::Player::Machine);
-
-        if(check_board("Machine wins"))
-        {
-            disableButtons();
-            return;
-        }*/
+        emit playBitch(*game_board);
     }
 }
 

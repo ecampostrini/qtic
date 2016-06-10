@@ -4,7 +4,7 @@
 #include <QObject>
 #include <utility>
 
-#include "ai.h"
+#include "gameboard.h"
 
 class Worker : public QObject
 {

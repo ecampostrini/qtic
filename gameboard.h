@@ -1,5 +1,5 @@
-#ifndef AI_H
-#define AI_H
+#ifndef GAMEBOARD_H
+#define GAMEBOARD_H
 
 #include <QDebug>
 #include <QMetaType>
@@ -65,18 +65,4 @@ private:
 /*since we are passing the board to the thread we add it to the type system of QT*/
 Q_DECLARE_METATYPE(GameBoard);
 
-
-class Ai
-{
-public:
-    Ai(int _rNum, int _cNum) : rowNum(_rNum), colNum(_cNum) {};
-    ~Ai();
-
-    std::pair<int,int> nextMove(GameBoard *board);
-private:
-    int rowNum, colNum;
-
-    int minimax(GameBoard*, const GameBoard::Player &);
-};
-
-#endif // AI_H
+#endif // GAMEBOARD_H

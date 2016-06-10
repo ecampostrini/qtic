@@ -7,7 +7,7 @@
 #include <QThread>
 
 #include "button.h"
-#include "ai.h"
+#include "gameboard.h"
 #include "worker.h"
 
 namespace Ui {
@@ -18,21 +18,17 @@ class board : public QWidget
 {
     Q_OBJECT
 
-private:
-    Ui::board *ui;
-    enum {NumRows = 3, NumCols = 3};
-    button *buttons[NumRows * NumCols];
-    GameBoard *game_board;
-    Ai *ai;
-
-    Worker *worker;
-    QThread *workerThread;
-
 public:
     explicit board(QWidget *parent = 0);
     ~board();
 
 private:
+    Ui::board *ui;
+    enum {NumRows = 3, NumCols = 3};
+    button *buttons[NumRows * NumCols];
+    GameBoard *game_board;
+    Worker *worker;
+    QThread *workerThread;
 
     button *createButton(int row, int col, const QString&, const char *member);
     bool check_board(const char*);
