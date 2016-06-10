@@ -4,8 +4,11 @@
 #include <QWidget>
 //#include <QPushButton>
 #include <QLineEdit>
+#include <QThread>
+
 #include "button.h"
 #include "ai.h"
+#include "worker.h"
 
 namespace Ui {
 class board;
@@ -22,6 +25,9 @@ private:
     GameBoard *game_board;
     Ai *ai;
 
+    Worker *worker;
+    QThread *workerThread;
+
 public:
     explicit board(QWidget *parent = 0);
     ~board();
@@ -31,13 +37,17 @@ private:
     button *createButton(int row, int col, const QString&, const char *member);
     bool check_board(const char*);
     void disableButtons();
-    //bool check_board();
+    void connectSignalsSlots();
 
     /*For debuggin*/
     QLineEdit *debug_display;
 
+signals:
+    void playBitch(GameBoard g);
+
 private slots:
     void buttonClicked();
+    void machinePlayed(std::pair<int, int>);
 };
 
 #endif // BOARD_H

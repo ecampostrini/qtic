@@ -11,6 +11,8 @@ int main(int argc, char *argv[])
 
     /*so we can dinamically create and destroy instances of it during runtime*/
     qRegisterMetaType<GameBoard>();
+    qRegisterMetaType<std::pair<int, int>>();
+
     w.show();
 
     return a.exec();

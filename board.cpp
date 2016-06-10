@@ -1,8 +1,10 @@
 #include <QGridLayout>
 #include <utility>
 #include <QtDebug>
+#include <QThread>
 
 #include "board.h"
+#include "worker.h"
 #include "ui_board.h"
 
 board::board(QWidget *parent) :
@@ -32,7 +34,15 @@ board::board(QWidget *parent) :
 
     game_board = new GameBoard(NumRows, NumCols);
     ai = new Ai(NumRows, NumCols);
+
+    worker = new Worker;
+    workerThread = new QThread;
+
+    worker->moveToThread(workerThread);
+    connectSignalsSlots();
+    workerThread->start();
 }
+
 
 button* board::createButton(int row, int col, const QString &text, const char *member)
 {
@@ -42,11 +52,27 @@ button* board::createButton(int row, int col, const QString &text, const char *m
     return new_button;
 }
 
+void board::connectSignalsSlots()
+{
+
+    connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
+    connect(this, SIGNAL(playBitch(GameBoard)), worker, SLOT(makeMove(GameBoard)));
+    connect(worker, SIGNAL(newMove(std::pair<int,int>)), this, SLOT(machinePlayed(std::pair<int, int>)));
+}
+
 board::~board()
 {
     delete ui;
     delete ai;
     delete game_board;
+    delete worker;
+
+    if(workerThread != 0 && workerThread->isRunning())
+    {
+        workerThread->requestInterruption();
+        workerThread->quit();
+    }
+    //delete workerThread;
 
 }
 
@@ -90,7 +116,10 @@ void board::buttonClicked()
             return;
         }
 
+        emit playBitch(*game_board);
+
         //then we make the machine play
+        /*
         std::pair<int, int> machine_move;
 
         machine_move = ai->nextMove(game_board);
@@ -106,6 +135,23 @@ void board::buttonClicked()
         {
             disableButtons();
             return;
-        }
+        }*/
+    }
+}
+
+void board::machinePlayed(std::pair<int, int> pos)
+{
+    int m_row = pos.first;
+    int m_col = pos.second;
+    int delinearized_button_position = m_row * NumRows + m_col;
+
+    buttons[delinearized_button_position]->setText("O");
+    buttons[delinearized_button_position]->setEnabled(false);
+    game_board->setSquare(m_row, m_col, GameBoard::Player::Machine);
+
+    if(check_board("Machine wins"))
+    {
+        disableButtons();
+        return;
     }
 }
