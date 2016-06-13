@@ -13,8 +13,8 @@ public:
     Worker(){};
 
 private:
-    int minimax(GameBoard &, const GameBoard::Player&);
-    std::pair<int, int> getBestMove(GameBoard&);
+    //int minimax(GameBoard &, const GameBoard::Player&);
+    //std::pair<int, int> getBestMove(GameBoard&);
     void concurrentWrap(GameBoard&);
 
 signals:
