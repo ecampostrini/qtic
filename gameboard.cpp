@@ -27,22 +27,76 @@ GameBoard::GameBoard(const GameBoard &other):
 
 bool GameBoard::hasWinner()
 {
+    bool flag;
+
     //Checks the rows
     for(int i = 0; i < rowNum; i++)
-        if(game_board[i][0] != Player::None && game_board[i][0] == game_board[i][1] && game_board[i][1] == game_board[i][2])
-            return true;
+    {
+        const Player a0 = game_board[i][0];
 
-    //Checks the columns
-    for(int i = 0; i < colNum; i++)
-        if(game_board[0][i] != Player::None && game_board[0][i] == game_board[1][i] && game_board[1][i] == game_board[2][i])
-            return true;
+        flag = true;
+        for(int j = 1; j < colNum; j++)
+        {
+            if(a0 != game_board[i][j] || game_board[i][j] == Player::None)
+            {
+                flag = false;
+                break;
+            }
+        }
 
-    //Checks the diagonals
-    if((game_board[0][0] != Player::None && game_board[0][0] == game_board[1][1] && game_board[1][1] == game_board[2][2]) ||
-        (game_board[0][2] != Player::None && game_board[0][2] == game_board[1][1] && game_board[1][1] == game_board[2][0]))
+        if(flag)
+            return true;
+    }
+
+    //check the cols
+    for(int j = 0; j < colNum; j++)
+    {
+        const Player a0 = game_board[0][j];
+
+        flag = true;
+        for(int i = 1; i < rowNum; i++)
+        {
+            if(a0 != game_board[i][j] || game_board[i][j] == Player::None)
+            {
+                flag = false;
+                break;
+            }
+
+        }
+
+        if(flag)
+            return true;
+    }
+
+    //and the diagonals
+    flag = true;
+    for(int i = 1; i < rowNum; i++)
+    {
+        const Player a0 = game_board[0][0];
+
+        if(a0 != game_board[i][i] || game_board[i][i] == Player::None)
+        {
+            flag = false;
+            break;
+        }
+    }
+
+    if(flag)
         return true;
 
-    return false;
+    flag = true;
+    for(int i = 1;  i < rowNum; i++)
+    {
+        const Player b0 = game_board[0][rowNum-1];
+
+        if(b0 != game_board[i][rowNum - 1 - i] || game_board[i][rowNum - 1 - i] == Player::None)
+        {
+            flag = false;
+            break;
+        }
+    }
+
+    return flag;
 }
 
 void GameBoard::setSquare(int row, int col, const Player &current_player)
