@@ -1,3 +1,8 @@
+#include <QtConcurrent/QtConcurrentRun>
+#include <QtConcurrent/qtconcurrentrun.h>
+#include <QFuture>
+#include <utility>
+
 #include "worker.h"
 #include "gameboard.h"
 
@@ -39,9 +44,7 @@ int Worker::minimax(GameBoard &board, const GameBoard::Player &currentPlayer)
     return result;
 }
 
-/* slots */
-
-void Worker::makeMove(GameBoard board)
+std::pair<int,int> Worker::getBestMove(GameBoard &board)
 {
     int result = -2;
     std::pair<int, int> best_move;
@@ -67,6 +70,22 @@ void Worker::makeMove(GameBoard board)
 
         }
 
-    emit newMove(best_move);
+    //emit newMove(best_move);
+    return best_move;
+}
+
+void Worker::concurrentWrap(GameBoard &board)
+{
+    QFuture<std::pair<int, int> > future = QtConcurrent::run(QThreadPool::globalInstance(), Worker::getBestMove);
+    std::pair<int, int> result = future.result();
+
+    emit newMove(result);
+}
+
+/* slots */
+
+void Worker::makeMove(GameBoard board)
+{
+    getBestMove(board);
 }
 

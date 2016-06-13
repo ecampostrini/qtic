@@ -14,6 +14,8 @@ public:
 
 private:
     int minimax(GameBoard &, const GameBoard::Player&);
+    std::pair<int, int> getBestMove(GameBoard&);
+    void concurrentWrap(GameBoard&);
 
 signals:
     void newMove(std::pair<int, int>);
