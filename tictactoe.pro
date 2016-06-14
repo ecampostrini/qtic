@@ -16,11 +16,13 @@ SOURCES += main.cpp\
         board.cpp \
     button.cpp \
     worker.cpp \
-    gameboard.cpp
+    gameboard.cpp \
+    algorithms.cpp
 
 HEADERS  += board.h \
     button.h \
     worker.h \
-    gameboard.h
+    gameboard.h \
+    algorithms.h
 
 FORMS    += board.ui
