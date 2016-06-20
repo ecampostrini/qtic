@@ -10,9 +10,9 @@
 void Worker::concurrentWrap(GameBoard &board)
 {
     std::pair<int, int> result;
-    QFuture<std::pair<std::pair<int, int>, int > > f1 = QtConcurrent::run(Minimax::getBestMove, board, 0, 1),
-                                                   f2 = QtConcurrent::run(Minimax::getBestMove, board, 1, 2),
-                                                   f3 = QtConcurrent::run(Minimax::getBestMove, board, 2, 3);
+    QFuture<std::pair<std::pair<int, int>, int > > f1 = QtConcurrent::run(AlphaBeta::getBestMove, board, 0, 1),
+                                                   f2 = QtConcurrent::run(AlphaBeta::getBestMove, board, 1, 2),
+                                                   f3 = QtConcurrent::run(AlphaBeta::getBestMove, board, 2, 3);
     auto r1 = f1.result(),
          r2 = f2.result(),
          r3 = f3.result();
@@ -32,10 +32,19 @@ void Worker::concurrentWrap(GameBoard &board)
     emit newMove(result);
 }
 
+void Worker::sequentialWrap(GameBoard &board)
+{
+    auto result = AlphaBeta::getBestMove(board, 0, board.getRowNumber());
+
+    emit newMove(result.first);
+
+}
+
 /* slots */
 
 void Worker::makeMove(GameBoard board)
 {
     concurrentWrap(board);
+    //sequentialWrap(board);
 }
 

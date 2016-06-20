@@ -10,4 +10,9 @@ namespace Minimax
     std::pair<std::pair<int,int>, int> getBestMove(GameBoard board, int from, int to);
 }
 
+namespace AlphaBeta
+{
+    std::pair<std::pair<int,int>, int> getBestMove(GameBoard board, int from, int to);
+}
+
 #endif // ALGORITHMS_H

@@ -24,7 +24,7 @@ public:
 
 private:
     Ui::board *ui;
-    enum {NumRows = 3, NumCols = 3};
+    enum {NumRows = 5, NumCols = 5};
     button *buttons[NumRows * NumCols];
     GameBoard *game_board;
     Worker *worker;
