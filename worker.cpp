@@ -1,5 +1,9 @@
-#include <QtConcurrent/QtConcurrentRun>
+//#include <QtConcurrent/qtconcurrentthreadengine.h>
+//#include <QtConcurrent/QtConcurrent>
+//#include <QtConcurrent/QtConcurrentRun>
+#include <QtConcurrent/QtConcurrentMap>
 #include <QFuture>
+#include <QFutureWatcher>
 #include <QDebug>
 #include <utility>
 
@@ -7,8 +11,34 @@
 #include "gameboard.h"
 #include "algorithms.h"
 
+void Worker::concurrentWrap2(GameBoard &board)
+{
+    /*
+    QVector<AlphaBeta::AlgoArgs> args;
+    int step = 1;
+
+    connect(watcher, SIGNAL(resultReadyAt(int)), this, SLOT(resultReady(int)));
+
+    for(int i = 0; i < max_thread_num; i += step)
+    {
+        //AlphaBeta::AlgoArgs newArg = AlphaBeta::AlgoArgs(i, i + step, board);
+        AlphaBeta::AlgoArgs newArg;
+
+        newArg.from = i;
+        newArg.to = i + step;
+        newArg.board = board;
+
+        args.push_back(newArg);
+    }
+
+    watcher->setFuture(QtConcurrent::mapped(args.constBegin(), args.constEnd(), AlphaBeta::getBestMove));
+    */
+}
+
+/*
 void Worker::concurrentWrap(GameBoard &board)
 {
+
     std::pair<int, int> result;
     QFuture<std::pair<std::pair<int, int>, int > > f1 = QtConcurrent::run(AlphaBeta::getBestMove, board, 0, 1),
                                                    f2 = QtConcurrent::run(AlphaBeta::getBestMove, board, 1, 2),
@@ -30,21 +60,43 @@ void Worker::concurrentWrap(GameBoard &board)
 
 
     emit newMove(result);
+}*/
+
+void Worker::sequentialWrap1(GameBoard board)
+{
+    //auto result = AlphaBeta::getBestMove(AlphaBeta::AlgoArgs(0, board.getRowNumber(), board));
+    AlphaBeta::AlgoArgs newArg;
+    std::pair<int, int> result;
+
+    newArg.from = 0;
+    newArg.to = board.getRowNumber();
+    newArg.board = board;
+
+    result = AlphaBeta::getBestMove(newArg);
+
+    emit newMove(result);
 }
 
-void Worker::sequentialWrap(GameBoard &board)
+void Worker::sequentialWrap2(GameBoard &board)
 {
     auto result = AlphaBeta::getBestMove(board, 0, board.getRowNumber());
 
-    emit newMove(result.first);
-
+    emit newMove(result);
 }
 
 /* slots */
 
 void Worker::makeMove(GameBoard board)
 {
-    concurrentWrap(board);
-    //sequentialWrap(board);
+    //concurrentWrap2(board);
+    //concurrentWrap(board);
+    qDebug() << "pre";
+    sequentialWrap1(board);
+    qDebug() << "post";
+    //sequentialWrap2(board);
 }
 
+void Worker::resultReady(int)
+{
+    qDebug() << "a thread has finished";
+}

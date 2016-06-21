@@ -5,6 +5,7 @@
 #include <QMetaType>
 
 #include <utility>
+#include <cassert>
 
 class GameBoard
 {
@@ -12,7 +13,7 @@ public:
     enum class Player : char {Human = -1, Machine = 1, None = 0};
 
     /*I add a default constructor so I can add the class to the metatype system*/
-    GameBoard(){}
+    GameBoard() : game_board(nullptr), rowNum(0), colNum(0) {}
 
     GameBoard(int rn, int cn) :
         rowNum(rn),
@@ -32,10 +33,45 @@ public:
         next_to_play = Player::None;
     }
 
+    GameBoard& operator=(const GameBoard& rhs)
+    {
+        Player** originalBoard = game_board;
+
+        //game_board = rhs.game_board;
+        freeBoxes = rhs.freeBoxes;
+        last_to_play = rhs.last_to_play;
+        next_to_play = rhs.next_to_play;
+        rowNum = rhs.rowNum;
+        colNum = rhs.colNum;
+
+        if(originalBoard != nullptr)
+        {
+            for(int i = 0; i < rowNum; i++)
+                for(int j = 0; j < colNum; j++)
+                {
+                    originalBoard[i][j] = rhs.game_board[i][j];
+                }
+        }
+        else
+        {
+            game_board = new Player*[rowNum];
+            for(int i = 0; i < rowNum; i++)
+            {
+                game_board[i] = new Player[rowNum];
+                for(int j = 0; j < colNum; j++)
+                    game_board[i][j] = rhs.game_board[i][j];
+            }
+        }
+
+        return *this;
+    }
+
     GameBoard(const GameBoard& other);
 
     ~GameBoard()
     {
+        assert(game_board != nullptr && "trying to free a null board");
+
         for(int i = 0; i < rowNum; i++)
             delete[] game_board[i];
         delete[] game_board;

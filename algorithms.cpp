@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "gameboard.h"
+#include "algorithms.h"
 
 namespace Minimax
 {
@@ -139,10 +140,14 @@ int minimax(GameBoard &board, const GameBoard::Player &currentPlayer, int min, i
     return result;
 }
 
-std::pair<std::pair<int,int>, int> getBestMove(GameBoard board, int from, int to)
+std::pair<int,int> getBestMove(const AlgoArgs args)
 {
+    //we create local variables for the arguments
+    GameBoard board = args.board;
+    int from = args.from, to = args.to;
     int result = -2;
     std::pair<int, int> best_move;
+
 
     for(int i = from; i < to; i++)
         for(int j = 0; j < board.getColNumber(); j++)
@@ -152,7 +157,6 @@ std::pair<std::pair<int,int>, int> getBestMove(GameBoard board, int from, int to
             if(!board.isEmpty(i, j))
                 continue;
 
-            qDebug() << "Aca";
             board.setSquare(i, j, GameBoard::Player::Machine);
             local_result = minimax(board, GameBoard::Player::Human, result, 100);
             board.clearSquare(i, j);
@@ -167,8 +171,41 @@ std::pair<std::pair<int,int>, int> getBestMove(GameBoard board, int from, int to
         }
 
     //emit newMove(best_move);
-    //return best_move;
-    return std::make_pair(best_move, result);
+    return best_move;
+    //return std::make_pair(best_move, result);
+}
+
+std::pair<int,int> getBestMove(GameBoard board, int from, int to)
+{
+    //we create local variables for the arguments
+    int result = -2;
+    std::pair<int, int> best_move;
+
+
+    for(int i = from; i < to; i++)
+        for(int j = 0; j < board.getColNumber(); j++)
+        {
+            int local_result;
+
+            if(!board.isEmpty(i, j))
+                continue;
+
+            board.setSquare(i, j, GameBoard::Player::Machine);
+            local_result = minimax(board, GameBoard::Player::Human, result, 100);
+            board.clearSquare(i, j);
+
+            if(local_result > result)
+            {
+                result = local_result;
+                best_move.first = i;
+                best_move.second = j;
+            }
+
+        }
+
+    //emit newMove(best_move);
+    return best_move;
+    //return std::make_pair(best_move, result);
 }
 
 }
