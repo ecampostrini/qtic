@@ -26,7 +26,7 @@ private:
     //std::pair<int, int> getBestMove(GameBoard&);
     const int max_thread_num = 3;
     const int step = 1;
-    //QFutureWatcher<std::pair<int, int> > *watcher;
+    QFutureWatcher<std::pair<int, int> > *watcher;
 
     void concurrentWrap2(GameBoard&);
     //void concurrentWrap(GameBoard&);

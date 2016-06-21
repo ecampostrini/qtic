@@ -13,7 +13,6 @@
 
 void Worker::concurrentWrap2(GameBoard &board)
 {
-    /*
     QVector<AlphaBeta::AlgoArgs> args;
     int step = 1;
 
@@ -31,8 +30,7 @@ void Worker::concurrentWrap2(GameBoard &board)
         args.push_back(newArg);
     }
 
-    watcher->setFuture(QtConcurrent::mapped(args.constBegin(), args.constEnd(), AlphaBeta::getBestMove));
-    */
+    watcher->setFuture(QtConcurrent::mapped(args.constBegin(), args.constEnd(), AlphaBeta::getBestMove2));
 }
 
 /*
@@ -72,7 +70,7 @@ void Worker::sequentialWrap1(GameBoard board)
     newArg.to = board.getRowNumber();
     newArg.board = board;
 
-    result = AlphaBeta::getBestMove(newArg);
+    result = AlphaBeta::getBestMove2(newArg);
 
     emit newMove(result);
 }
@@ -90,9 +88,7 @@ void Worker::makeMove(GameBoard board)
 {
     //concurrentWrap2(board);
     //concurrentWrap(board);
-    qDebug() << "pre";
     sequentialWrap1(board);
-    qDebug() << "post";
     //sequentialWrap2(board);
 }
 

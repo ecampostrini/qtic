@@ -140,7 +140,7 @@ int minimax(GameBoard &board, const GameBoard::Player &currentPlayer, int min, i
     return result;
 }
 
-std::pair<int,int> getBestMove(const AlgoArgs args)
+std::pair<int,int> getBestMove2(const AlgoArgs args)
 {
     //we create local variables for the arguments
     GameBoard board = args.board;

@@ -29,7 +29,7 @@ namespace AlphaBeta
 
 
     std::pair<int,int> getBestMove(GameBoard board, int from, int to);
-    std::pair<int,int> getBestMove(const AlgoArgs args);
+    std::pair<int,int> getBestMove2(const AlgoArgs args);
 }
 
 #endif // ALGORITHMS_H
