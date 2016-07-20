@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QThread>
 #include <utility>
 #include <algorithm>
 
@@ -140,14 +141,15 @@ int minimax(GameBoard &board, const GameBoard::Player &currentPlayer, int min, i
     return result;
 }
 
-std::pair<int,int> getBestMove2(const AlgoArgs args)
+std::pair<int, std::pair<int,int> > getBestMove2(const AlgoArgs& args)
 {
+    qDebug() << "thread" << QThread::currentThreadId() << "is excecuting from " << args.from << " to " << args.to;
+
     //we create local variables for the arguments
-    GameBoard board = args.board;
+    GameBoard board(args.board);
     int from = args.from, to = args.to;
     int result = -2;
-    std::pair<int, int> best_move;
-
+    std::pair<int, int> best_move = std::make_pair(-1, -1);
 
     for(int i = from; i < to; i++)
         for(int j = 0; j < board.getColNumber(); j++)
@@ -171,8 +173,8 @@ std::pair<int,int> getBestMove2(const AlgoArgs args)
         }
 
     //emit newMove(best_move);
-    return best_move;
-    //return std::make_pair(best_move, result);
+    //return best_move;
+    return std::make_pair(result, best_move);
 }
 
 std::pair<int,int> getBestMove(GameBoard board, int from, int to)

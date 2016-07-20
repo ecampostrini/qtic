@@ -17,7 +17,8 @@ namespace AlphaBeta
         int from;
         int to;
         GameBoard board;
-        /*NoName();
+        /*
+        NoName();
         NoName (int f, int t, GameBoard b) : from(f), to(t), board(b) {}
         NoName(const NoName& other)
         {
@@ -29,7 +30,7 @@ namespace AlphaBeta
 
 
     std::pair<int,int> getBestMove(GameBoard board, int from, int to);
-    std::pair<int,int> getBestMove2(const AlgoArgs args);
+    std::pair<int, std::pair<int,int> > getBestMove2(const AlgoArgs& args);
 }
 
 #endif // ALGORITHMS_H

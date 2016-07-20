@@ -3,9 +3,12 @@
 
 #include <QObject>
 #include <QFutureWatcher>
+#include <QSharedPointer>
 #include <utility>
 
 #include "gameboard.h"
+
+using ValuePos_t = std::pair<int, std::pair<int, int>>;
 
 class Worker : public QObject
 {
@@ -14,7 +17,9 @@ class Worker : public QObject
 public:
     Worker()
     {
-        //watcher = new QFutureWatcher<std::pair<int, int> >();
+        watcher = QSharedPointer<QFutureWatcher<ValuePos_t>>::create(this);
+        connect(watcher.data(), SIGNAL(resultReadyAt(int)), this, SLOT(resultReady(int)));
+        connect(watcher.data(), SIGNAL(finished()), this, SLOT(watcherFinished()));
     };
 
     ~Worker()
@@ -24,12 +29,13 @@ public:
 
 private:
     //std::pair<int, int> getBestMove(GameBoard&);
-    const int max_thread_num = 3;
+    const int max_thread_num = 4;
     const int step = 1;
-    QFutureWatcher<std::pair<int, int> > *watcher;
+    std::pair<int , std::pair<int, int> > result_queue[10];
+    QSharedPointer<QFutureWatcher<ValuePos_t>> watcher;
+    //QFutureWatcher<ValuePos_t> *watcher;
 
-    void concurrentWrap2(GameBoard&);
-    //void concurrentWrap(GameBoard&);
+    void concurrentWrap(GameBoard&);
     void sequentialWrap1(GameBoard);
     void sequentialWrap2(GameBoard&);
 
@@ -39,6 +45,7 @@ signals:
 public slots:
     void makeMove(GameBoard);
     void resultReady(int);
+    void watcherFinished();
 };
 
 #endif // WORKER_H

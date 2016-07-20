@@ -1,70 +1,41 @@
-//#include <QtConcurrent/qtconcurrentthreadengine.h>
-//#include <QtConcurrent/QtConcurrent>
 //#include <QtConcurrent/QtConcurrentRun>
+#include <QtConcurrent>
 #include <QtConcurrent/QtConcurrentMap>
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QDebug>
 #include <utility>
+#include <algorithm>
 
 #include "worker.h"
 #include "gameboard.h"
 #include "algorithms.h"
 
-void Worker::concurrentWrap2(GameBoard &board)
+void Worker::concurrentWrap(GameBoard& board)
 {
     QVector<AlphaBeta::AlgoArgs> args;
-    int step = 1;
 
-    connect(watcher, SIGNAL(resultReadyAt(int)), this, SLOT(resultReady(int)));
 
-    for(int i = 0; i < max_thread_num; i += step)
+    for(int i = 0; i < board.getRowNumber(); i += step)
     {
-        //AlphaBeta::AlgoArgs newArg = AlphaBeta::AlgoArgs(i, i + step, board);
         AlphaBeta::AlgoArgs newArg;
 
         newArg.from = i;
-        newArg.to = i + step;
+        newArg.to = std::min(i + step, board.getRowNumber());
         newArg.board = board;
 
         args.push_back(newArg);
     }
 
-    watcher->setFuture(QtConcurrent::mapped(args.constBegin(), args.constEnd(), AlphaBeta::getBestMove2));
+    watcher->setFuture(QtConcurrent::mapped(args.begin(), args.end(), AlphaBeta::getBestMove2));
+    watcher->waitForFinished();
 }
 
-/*
-void Worker::concurrentWrap(GameBoard &board)
-{
-
-    std::pair<int, int> result;
-    QFuture<std::pair<std::pair<int, int>, int > > f1 = QtConcurrent::run(AlphaBeta::getBestMove, board, 0, 1),
-                                                   f2 = QtConcurrent::run(AlphaBeta::getBestMove, board, 1, 2),
-                                                   f3 = QtConcurrent::run(AlphaBeta::getBestMove, board, 2, 3);
-    auto r1 = f1.result(),
-         r2 = f2.result(),
-         r3 = f3.result();
-
-
-    if(r1.second > r2.second)
-        if(r1.second > r3.second)
-            result = r1.first;
-        else
-            result = r3.first;
-    else if(r2.second > r3.second)
-        result = r2.first;
-    else
-        result = r3.first;
-
-
-    emit newMove(result);
-}*/
 
 void Worker::sequentialWrap1(GameBoard board)
 {
-    //auto result = AlphaBeta::getBestMove(AlphaBeta::AlgoArgs(0, board.getRowNumber(), board));
     AlphaBeta::AlgoArgs newArg;
-    std::pair<int, int> result;
+    std::pair<int, std::pair<int, int> > result;
 
     newArg.from = 0;
     newArg.to = board.getRowNumber();
@@ -72,7 +43,8 @@ void Worker::sequentialWrap1(GameBoard board)
 
     result = AlphaBeta::getBestMove2(newArg);
 
-    emit newMove(result);
+    qDebug() << "sequential result" << result.second.first << " " << result.second.second;
+    emit newMove(result.second);
 }
 
 void Worker::sequentialWrap2(GameBoard &board)
@@ -86,13 +58,27 @@ void Worker::sequentialWrap2(GameBoard &board)
 
 void Worker::makeMove(GameBoard board)
 {
-    //concurrentWrap2(board);
-    //concurrentWrap(board);
-    sequentialWrap1(board);
+    concurrentWrap(board);
+    //sequentialWrap1(board);
     //sequentialWrap2(board);
 }
 
-void Worker::resultReady(int)
+void Worker::resultReady(int pos)
 {
-    qDebug() << "a thread has finished";
+    std::pair<int, std::pair<int, int> > result = watcher->resultAt(pos);
+    result_queue[pos] = result;
+    qDebug() << "thread in position " << pos << "has finished" << result.second.first << " " << result.second.second;
+}
+
+bool compare(std::pair<int, std::pair<int, int> > a, std::pair<int, std::pair<int, int> > b)
+{
+    return a.first < b.first;
+}
+
+void Worker::watcherFinished()
+{
+    auto result = std::max_element(result_queue, result_queue + max_thread_num, compare);
+    //qDebug() << "max val" << result->first << "at" << result->second.first << " " << result->second.second;
+
+    emit newMove(result->second);
 }
