@@ -7,7 +7,7 @@
 
 namespace Minimax
 {
-    std::pair<std::pair<int,int>, int> getBestMove(GameBoard board, int from, int to);
+    auto getBestMove(GameBoard& board) -> std::pair<int, int>;
 }
 
 namespace AlphaBeta

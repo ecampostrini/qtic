@@ -46,12 +46,12 @@ int minimax(GameBoard &board, const GameBoard::Player &currentPlayer)
 }
 
 
-std::pair<std::pair<int,int>, int> getBestMove(GameBoard board, int from, int to)
+auto getBestMove(GameBoard& board) -> std::pair<int, int>
 {
     int result = -2;
     std::pair<int, int> best_move;
 
-    for(int i = from; i < to; i++)
+    for(int i = 0; i < board.getRowNumber(); i++)
         for(int j = 0; j < board.getColNumber(); j++)
         {
             int local_result;
@@ -72,9 +72,7 @@ std::pair<std::pair<int,int>, int> getBestMove(GameBoard board, int from, int to
 
         }
 
-    //emit newMove(best_move);
-    //return best_move;
-    return std::make_pair(best_move, result);
+    return best_move;
 }
 }
 
