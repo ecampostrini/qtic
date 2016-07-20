@@ -2,8 +2,6 @@
 #define WORKER_H
 
 #include <QObject>
-#include <QFutureWatcher>
-#include <QSharedPointer>
 #include <utility>
 
 #include "gameboard.h"

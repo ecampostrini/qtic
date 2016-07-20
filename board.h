@@ -5,6 +5,9 @@
 //#include <QPushButton>
 #include <QLineEdit>
 #include <QThread>
+#include <QSharedPointer>
+
+#include <memory>
 
 #include "button.h"
 #include "gameboard.h"
@@ -26,8 +29,9 @@ private:
     Ui::board *ui;
     enum {NumRows = 3, NumCols = 3};
     button *buttons[NumRows * NumCols];
-    GameBoard *game_board;
-    Worker *worker;
+    //GameBoard *game_board;
+    std::shared_ptr<GameBoard> game_board;
+    QSharedPointer<Worker> worker;
     QThread *workerThread;
 
     button *createButton(int row, int col, const QString&, const char *member);

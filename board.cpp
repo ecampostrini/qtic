@@ -34,8 +34,9 @@ board::board(QWidget *parent) :
     setLayout(mainLayout);
 
     /*and create the background processing classes*/
-    game_board = new GameBoard(NumRows, NumCols);
-    worker = new Worker;
+    //game_board = new GameBoard(NumRows, NumCols);
+    game_board = std::make_shared<GameBoard>(NumRows, NumCols);
+    worker = QSharedPointer<Worker>::create();
     workerThread = new QThread;
 
     worker->moveToThread(workerThread);
@@ -55,14 +56,14 @@ button* board::createButton(int row, int col, const QString &text, const char *m
 void board::connectSignalsSlots()
 {
     connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
-    connect(this, SIGNAL(playBitch(GameBoard)), worker, SLOT(makeMove(GameBoard)));
-    connect(worker, SIGNAL(newMove(std::pair<int,int>)), this, SLOT(machinePlayed(std::pair<int, int>)));
+    connect(this, SIGNAL(playBitch(GameBoard)), worker.data(), SLOT(makeMove(GameBoard)));
+    connect(worker.data(), SIGNAL(newMove(std::pair<int,int>)), this, SLOT(machinePlayed(std::pair<int, int>)));
 }
 
 board::~board()
 {
     delete ui;
-    delete game_board;
+    //delete game_board;
 
     worker->deleteLater();
     if(workerThread != 0 && workerThread->isRunning())
